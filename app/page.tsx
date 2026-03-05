@@ -1,65 +1,268 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
+const MAP_LINES = [
+  "  ┌─────────────────────────────────────────┐",
+  "  │              ╔═══════╗                  │",
+  "  │   ┌───┐      ║SITE A ║     ┌──────┐    │",
+  "  │   │ T ├──    ╚═══════╝     │      │    │",
+  "  │   └───┘   ┌──────────┐    │spawn │    │",
+  "  │    ╱      │          │    │      │    │",
+  "  │   ╱  ┌────┤   MID    ├────┐ └──────┘    │",
+  "  │  ╱   │    │          │    │     ╲      │",
+  "  │ ╱    │    └──────────┘    │      ╲     │",
+  "  │      │         │          │       ╲    │",
+  "  │  ──→ │    ──→  │          │  ←──   │   │",
+  "  │      │  ┌──────┴──────┐   │        │   │",
+  "  │      └──┤             ├───┘   ┌───┐│   │",
+  "  │  ◉ ◉   │   SITE B    │  ◉    │ T ││   │",
+  "  │  ↗ ↗   │   ★ PUSH    │  ↖    └───┘│   │",
+  "  │         └─────────────┘              │",
+  "  └─────────────────────────────────────────┘",
+];
+
+const STRAT_LINES = [
+  { text: "ROUND 14 — RETAKE B", style: "title" },
+  { text: "" },
+  { text: "1. smoke deep corner", style: "blue" },
+  { text: "2. flash over site wall", style: "blue" },
+  { text: "3. 2 players push tunnel", style: "red" },
+  { text: "4. 1 lurk mid for rotate", style: "red" },
+  { text: "5. trade into site together", style: "pencil" },
+  { text: "" },
+  { text: "KEY: fast execute, don't peek alone", style: "underline" },
+];
+
+function MapLine({ line, index }: { line: string; index: number }) {
+  const hasRedMarkers = index === 14;
+
+  if (hasRedMarkers) {
+    return (
+      <span>
+        {"  │  "}
+        <span className="text-[var(--red-marker)]">↗ ↗</span>
+        {"   │   "}
+        <span className="text-[var(--red-marker)]">★ PUSH</span>
+        {"    │  "}
+        <span className="text-[var(--blue-marker)]">↖</span>
+        {"    └───┘│   │"}
+      </span>
+    );
+  }
+
+  return <span>{line}</span>;
+}
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  const [visibleMapLines, setVisibleMapLines] = useState(0);
+  const [visibleStratLines, setVisibleStratLines] = useState(0);
+
+  useEffect(() => {
+    setMounted(true);
+
+    // Map draws first
+    const mapInterval = setInterval(() => {
+      setVisibleMapLines((prev) => {
+        if (prev >= MAP_LINES.length) {
+          clearInterval(mapInterval);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 120);
+
+    // Strat notes start after a delay
+    const stratTimer = setTimeout(() => {
+      const stratInterval = setInterval(() => {
+        setVisibleStratLines((prev) => {
+          if (prev >= STRAT_LINES.length) {
+            clearInterval(stratInterval);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 250);
+    }, MAP_LINES.length * 120 + 300);
+
+    return () => {
+      clearInterval(mapInterval);
+      clearTimeout(stratTimer);
+    };
+  }, []);
+
+  if (!mounted) return null;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="paper-grain relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[var(--background)] font-[family-name:var(--font-geist-sans)]">
+      {/* Paper grid background */}
+      <div className="paper-grid pointer-events-none absolute inset-0 opacity-40" />
+
+      {/* Fold crease */}
+      <div className="pointer-events-none absolute top-0 bottom-0 left-1/2 w-px bg-[var(--grid-line)] opacity-30" />
+
+      <main className="relative z-10 flex w-full max-w-5xl flex-col items-center gap-14 px-6 py-16 sm:py-24">
+        {/* Header */}
+        <div className="flex flex-col items-center gap-5">
+          <div className="animate-fade-in-up flex items-center gap-3 font-[family-name:var(--font-geist-mono)] text-xs tracking-[0.25em] text-[var(--pencil)]">
+            <span className="h-px w-8 bg-[var(--pencil)]" />
+            EST. 2026
+            <span className="h-px w-8 bg-[var(--pencil)]" />
+          </div>
+
+          <h1 className="animate-fade-in-up delay-100 text-center text-6xl font-bold tracking-tight text-[var(--ink)] sm:text-8xl" style={{ fontVariant: "small-caps" }}>
+            Pentad
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+
+          <div className="animate-fade-in-up delay-200 relative">
+            <p className="max-w-lg text-center text-lg leading-relaxed text-[var(--ink-light)]">
+              Your 10-mans, drawn up. Track lobbies with friends, climb the
+              leaderboard, own your ELO.
+            </p>
+            <svg className="absolute -bottom-2 left-1/2 -translate-x-1/2" width="200" height="8" viewBox="0 0 200 8">
+              <path
+                d="M0 4 Q25 0, 50 4 T100 4 T150 4 T200 4"
+                fill="none"
+                stroke="var(--pencil)"
+                strokeWidth="1.5"
+                opacity="0.4"
+                className="animate-draw delay-500"
+              />
+            </svg>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Main content: Strat board + play notes */}
+        <div className="flex w-full flex-col items-center gap-8 lg:flex-row lg:items-start lg:justify-center lg:gap-0">
+          {/* ASCII Tactical Map */}
+          <div className="animate-fade-in delay-300 relative rounded-sm border border-[var(--grid-line)] bg-[var(--paper)] p-5 shadow-[2px_3px_8px_rgba(0,0,0,0.08)]" style={{ transform: "rotate(-0.8deg)" }}>
+            {/* Tape pieces */}
+            <div className="absolute -top-2 left-8 h-5 w-16 rounded-sm bg-[#e8dcc8]/80 shadow-sm" style={{ transform: "rotate(-2deg)" }} />
+            <div className="absolute -top-2 right-10 h-5 w-12 rounded-sm bg-[#e8dcc8]/80 shadow-sm" style={{ transform: "rotate(1.5deg)" }} />
+
+            <div className="mb-3 flex items-center justify-between font-[family-name:var(--font-geist-mono)] text-[10px] tracking-[0.2em] text-[var(--pencil)]">
+              <span>SITE B — ATTACK STRAT</span>
+              <span className="text-[var(--red-marker)]">CLASSIFIED</span>
+            </div>
+
+            <pre className="font-[family-name:var(--font-geist-mono)] text-[10px] leading-[1.6] text-[var(--ink)] sm:text-xs sm:leading-[1.6]">
+              {MAP_LINES.map((line, i) => (
+                <div
+                  key={i}
+                  className="transition-all duration-200"
+                  style={{
+                    opacity: i < visibleMapLines ? 1 : 0,
+                    transform: i < visibleMapLines ? "translateX(0)" : "translateX(-8px)",
+                  }}
+                >
+                  <MapLine line={line} index={i} />
+                </div>
+              ))}
+            </pre>
+
+            {/* Arrow legend */}
+            <div
+              className="mt-3 flex gap-4 font-[family-name:var(--font-geist-mono)] text-[10px] transition-opacity duration-500"
+              style={{ opacity: visibleMapLines >= MAP_LINES.length ? 1 : 0 }}
+            >
+              <span className="text-[var(--red-marker)]">● T side push</span>
+              <span className="text-[var(--blue-marker)]">● CT rotate</span>
+              <span className="text-[var(--pencil)]">◉ smoke</span>
+            </div>
+          </div>
+
+          {/* Strat notes */}
+          <div
+            className="animate-fade-in delay-300 margin-line relative w-full max-w-xs rounded-sm border border-[var(--grid-line)] bg-[var(--paper)] p-5 pl-6 shadow-[2px_3px_8px_rgba(0,0,0,0.08)] lg:-ml-2"
+            style={{ transform: "rotate(0.5deg)" }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
+            {/* Paper holes */}
+            <div className="absolute top-6 -left-[1px] flex flex-col gap-16">
+              <div className="h-3 w-3 rounded-full border border-[var(--grid-line)] bg-[var(--background)]" />
+              <div className="h-3 w-3 rounded-full border border-[var(--grid-line)] bg-[var(--background)]" />
+              <div className="h-3 w-3 rounded-full border border-[var(--grid-line)] bg-[var(--background)]" />
+            </div>
+
+            <div className="mb-3 font-[family-name:var(--font-geist-mono)] text-[10px] tracking-[0.2em] text-[var(--pencil)]">
+              CALL SHEET
+            </div>
+
+            <div className="flex flex-col gap-2 font-[family-name:var(--font-geist-mono)] text-[12px] leading-relaxed">
+              {STRAT_LINES.map((line, i) => {
+                const visible = i < visibleStratLines;
+                let className = "transition-all duration-300 text-[var(--ink)]";
+                if (!visible) className += " opacity-0 translate-y-1";
+                if (line.style === "title")
+                  className += " font-bold text-[var(--ink)] text-sm border-b border-[var(--ink)]/20 pb-1 mb-1";
+                if (line.style === "red")
+                  className += " text-[var(--red-marker)]";
+                if (line.style === "blue")
+                  className += " text-[var(--blue-marker)]";
+                if (line.style === "pencil")
+                  className += " text-[var(--pencil)] italic";
+                if (line.style === "underline")
+                  className += " underline decoration-[var(--pencil)] decoration-wavy decoration-1 underline-offset-4 text-[var(--ink-light)] text-[11px] mt-2";
+
+                return (
+                  <div key={i} className={className}>
+                    {line.text || "\u00A0"}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Download CTA */}
+        <div className="animate-fade-in-up delay-700 flex flex-col items-center gap-4">
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/pentad-desktop-0.1.0-win-setup.exe"
+            download
+            className="group relative flex h-14 items-center gap-3 rounded-sm border-2 border-[var(--ink)] bg-[var(--ink)] px-8 font-[family-name:var(--font-geist-sans)] text-sm font-semibold text-[var(--paper)] transition-all duration-200 hover:bg-[var(--paper)] hover:text-[var(--ink)]"
           >
-            Documentation
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="transition-transform group-hover:translate-y-0.5"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download for Windows
           </a>
+          <span className="font-[family-name:var(--font-geist-mono)] text-[11px] tracking-wide text-[var(--pencil)]">
+            v0.1.0 &middot; Windows 10+
+          </span>
+        </div>
+
+        {/* Feature tags */}
+        <div className="animate-fade-in delay-1000 flex flex-wrap justify-center gap-3">
+          {["10-Man Lobbies", "Custom ELO", "Leaderboards", "Match History"].map(
+            (tag) => (
+              <span
+                key={tag}
+                className="rounded-sm border border-[var(--grid-line)] bg-[var(--paper)] px-4 py-1.5 font-[family-name:var(--font-geist-mono)] text-[11px] tracking-wide text-[var(--ink-light)] shadow-sm"
+              >
+                {tag}
+              </span>
+            )
+          )}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 pb-8 font-[family-name:var(--font-geist-mono)] text-[11px] tracking-[0.2em] text-[var(--pencil)]">
+        PENTAD &middot; 2026
+      </footer>
     </div>
   );
 }
