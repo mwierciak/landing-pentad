@@ -217,8 +217,7 @@ export default function Home() {
         {/* Download CTA */}
         <div className="animate-fade-in-up delay-700 flex flex-col items-center gap-4">
           <a
-            href="/pentad-desktop-0.1.0-win-setup.exe"
-            download
+            href="/download/windows"
             className="group relative flex h-14 items-center gap-3 rounded-sm border-2 border-[var(--ink)] bg-[var(--ink)] px-8 font-[family-name:var(--font-geist-sans)] text-sm font-semibold text-[var(--paper)] transition-all duration-200 hover:bg-[var(--paper)] hover:text-[var(--ink)]"
           >
             <svg
@@ -240,7 +239,7 @@ export default function Home() {
             Download for Windows
           </a>
           <span className="font-[family-name:var(--font-geist-mono)] text-[11px] tracking-wide text-[var(--pencil)]">
-            v0.1.0 &middot; Windows 10+
+            Latest release &middot; Windows 10+
           </span>
         </div>
 

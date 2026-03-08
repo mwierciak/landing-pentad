@@ -1,4 +1,15 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) landing page for Pentad Desktop.
+
+## Windows Download Routing
+
+The Windows download button points at `/download/windows`, which resolves the
+latest Windows installer from the
+[`mwierciak/pentad-desktop` releases page](https://github.com/mwierciak/pentad-desktop/releases).
+
+If the desktop repo is private, set `PENTAD_DESKTOP_GITHUB_TOKEN` or
+`GITHUB_TOKEN` in the deployment environment so the route can read the latest
+release metadata from the GitHub API. If release lookup fails, the route falls
+back to the releases page.
 
 ## Getting Started
 
