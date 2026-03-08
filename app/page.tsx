@@ -1,99 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
-const MAP_LINES = [
-  "  ┌─────────────────────────────────────────┐",
-  "  │              ╔═══════╗                  │",
-  "  │   ┌───┐      ║SITE A ║     ┌──────┐    │",
-  "  │   │ T ├──    ╚═══════╝     │      │    │",
-  "  │   └───┘   ┌──────────┐    │spawn │    │",
-  "  │    ╱      │          │    │      │    │",
-  "  │   ╱  ┌────┤   MID    ├────┐ └──────┘    │",
-  "  │  ╱   │    │          │    │     ╲      │",
-  "  │ ╱    │    └──────────┘    │      ╲     │",
-  "  │      │         │          │       ╲    │",
-  "  │  ──→ │    ──→  │          │  ←──   │   │",
-  "  │      │  ┌──────┴──────┐   │        │   │",
-  "  │      └──┤             ├───┘   ┌───┐│   │",
-  "  │  ◉ ◉   │   SITE B    │  ◉    │ T ││   │",
-  "  │  ↗ ↗   │   ★ PUSH    │  ↖    └───┘│   │",
-  "  │         └─────────────┘              │",
-  "  └─────────────────────────────────────────┘",
-];
-
-const STRAT_LINES = [
-  { text: "ROUND 14 — RETAKE B", style: "title" },
-  { text: "" },
-  { text: "1. smoke deep corner", style: "blue" },
-  { text: "2. flash over site wall", style: "blue" },
-  { text: "3. 2 players push tunnel", style: "red" },
-  { text: "4. 1 lurk mid for rotate", style: "red" },
-  { text: "5. trade into site together", style: "pencil" },
-  { text: "" },
-  { text: "KEY: fast execute, don't peek alone", style: "underline" },
-];
-
-function MapLine({ line, index }: { line: string; index: number }) {
-  const hasRedMarkers = index === 14;
-
-  if (hasRedMarkers) {
-    return (
-      <span>
-        {"  │  "}
-        <span className="text-[var(--red-marker)]">↗ ↗</span>
-        {"   │   "}
-        <span className="text-[var(--red-marker)]">★ PUSH</span>
-        {"    │  "}
-        <span className="text-[var(--blue-marker)]">↖</span>
-        {"    └───┘│   │"}
-      </span>
-    );
-  }
-
-  return <span>{line}</span>;
-}
+import { StratBoard } from "./components/strat-board";
+import { DownloadButton } from "./components/download-button";
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
-  const [visibleMapLines, setVisibleMapLines] = useState(0);
-  const [visibleStratLines, setVisibleStratLines] = useState(0);
-
-  useEffect(() => {
-    setMounted(true);
-
-    // Map draws first
-    const mapInterval = setInterval(() => {
-      setVisibleMapLines((prev) => {
-        if (prev >= MAP_LINES.length) {
-          clearInterval(mapInterval);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 120);
-
-    // Strat notes start after a delay
-    const stratTimer = setTimeout(() => {
-      const stratInterval = setInterval(() => {
-        setVisibleStratLines((prev) => {
-          if (prev >= STRAT_LINES.length) {
-            clearInterval(stratInterval);
-            return prev;
-          }
-          return prev + 1;
-        });
-      }, 250);
-    }, MAP_LINES.length * 120 + 300);
-
-    return () => {
-      clearInterval(mapInterval);
-      clearTimeout(stratTimer);
-    };
-  }, []);
-
-  if (!mounted) return null;
-
   return (
     <div className="paper-grain relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[var(--background)] font-[family-name:var(--font-geist-sans)]">
       {/* Paper grid background */}
@@ -103,13 +11,7 @@ export default function Home() {
       <div className="pointer-events-none absolute top-0 bottom-0 left-1/2 w-px bg-[var(--grid-line)] opacity-30" />
 
       <main className="relative z-10 flex w-full max-w-5xl flex-col items-center gap-14 px-6 py-16 sm:py-24">
-        {/* Header */}
-        <div className="flex flex-col items-center gap-5">
-          <div className="animate-fade-in-up flex items-center gap-3 font-[family-name:var(--font-geist-mono)] text-xs tracking-[0.25em] text-[var(--pencil)]">
-            <span className="h-px w-8 bg-[var(--pencil)]" />
-            EST. 2026
-            <span className="h-px w-8 bg-[var(--pencil)]" />
-          </div>
+        <StratBoard />
 
           <h1 className="animate-fade-in-up delay-100 text-center text-6xl font-bold tracking-tight text-[var(--ink)] sm:text-8xl" style={{ fontVariant: "small-caps" }}>
             Pentad
