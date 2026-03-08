@@ -2,14 +2,9 @@ This is a [Next.js](https://nextjs.org) landing page for Pentad Desktop.
 
 ## Windows Download Routing
 
-The Windows download button points at `/download/windows`, which resolves the
-latest Windows installer from the
-[`mwierciak/pentad-desktop` releases page](https://github.com/mwierciak/pentad-desktop/releases).
-
-If the desktop repo is private, set `PENTAD_DESKTOP_GITHUB_TOKEN` or
-`GITHUB_TOKEN` in the deployment environment so the route can read the latest
-release metadata from the GitHub API. If release lookup fails, the route falls
-back to the releases page.
+The Windows download button points at `/download/windows`, which redirects to
+the pinned
+[`mwierciak/Pentad_Public` v1.0.0 release page](https://github.com/mwierciak/Pentad_Public/releases/tag/v1.0.0).
 
 ## Getting Started
 

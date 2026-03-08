@@ -264,7 +264,7 @@ export default function Home() {
             Download for Windows
           </a>
           <span className="font-[family-name:var(--font-geist-mono)] text-[11px] tracking-wide text-[var(--pencil)]">
-            Latest release &middot; Windows 10+
+            v1.0.0 &middot; Windows 10+
           </span>
         </div>
 
